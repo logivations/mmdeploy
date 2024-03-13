@@ -38,7 +38,7 @@ steps:
         from_secret: DOCKER_QUAY_PASSWORD
 
 ---
-#PR - precommit
+#PR - precommit process
 kind: pipeline
 type: docker
 name: PR Pre-commit check
