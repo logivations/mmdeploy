@@ -1,0 +1,81 @@
+kind: pipeline
+type: docker
+name: Label Studio main Build
+
+platform: 
+  arch: amd64
+  os: linux
+
+trigger:
+  branch:
+    - main
+  event:
+    - push
+
+clone:
+  depth: 50
+
+steps:
+  - name: Build Label Studio MMDeploy Latest image
+    image: plugins/docker:20.14
+    environment:
+      DOCKER_BUILDKIT: 1
+    settings:
+      dockerfile: docker/deploy/Dockerfile
+      context: docker/deploy
+      registry: quay.io
+      repo: quay.io/logivations/ml_all
+      privileged: true
+      build_args: 
+        - BUILDKIT_INLINE_CACHE=1
+      no_cache: true
+      tags:
+        - LSMMDeploy_latest
+        - LSMMDeploy_latest_${DRONE_COMMIT_SHA}
+      username:
+        from_secret: DOCKER_QUAY_USERNAME
+      password:
+        from_secret: DOCKER_QUAY_PASSWORD
+
+---
+#PR - precommit process
+kind: pipeline
+type: docker
+name: PR Pre-commit check
+
+platform: 
+  arch: amd64
+  os: linux
+
+trigger:
+  branch:
+    - main
+  event:
+    - pull_request
+
+clone:
+  depth: 50
+
+steps:
+  - name: Build Label Studio MMDeploy PR image
+    image: plugins/docker:20.14
+    environment:
+      DOCKER_BUILDKIT: 1
+    settings:
+      dockerfile: docker/deploy/Dockerfile
+      context: docker/deploy
+      registry: quay.io
+      repo: quay.io/logivations/ml_all
+      privileged: true
+      build_args: 
+        - BUILDKIT_INLINE_CACHE=1
+      cache_from:
+        - quay.io/logivations/ml_all:LSMMDeploy_pr${DRONE_PULL_REQUEST}
+        - quay.io/logivations/ml_all:LSMMDeploy_latest
+      tags:
+        - LSMMDeploy_pr${DRONE_PULL_REQUEST}
+        - LSMMDeploy_pr${DRONE_PULL_REQUEST}_${DRONE_COMMIT_SHA}
+      username:
+        from_secret: DOCKER_QUAY_USERNAME
+      password:
+        from_secret: DOCKER_QUAY_PASSWORD
