@@ -9,7 +9,6 @@ platform:
 trigger:
   branch:
     - main
-    - v1.3.2-branch
   event:
     - push
 
@@ -51,6 +50,7 @@ platform:
 trigger:
   branch:
     - main
+    - v1.3.2-branch
   event:
     - pull_request
 
