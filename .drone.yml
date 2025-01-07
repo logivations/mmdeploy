@@ -9,6 +9,7 @@ platform:
 trigger:
   branch:
     - main
+    - v1.3.2-branch
   event:
     - push
 
