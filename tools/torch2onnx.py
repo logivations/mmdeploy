@@ -16,6 +16,7 @@ def parse_args():
     parser.add_argument('model_cfg', help='model config path')
     parser.add_argument('checkpoint', help='model checkpoint path')
     parser.add_argument('img', help='image used to convert model model')
+    parser.add_argument("--file_name", help='Name for .onnx file')
     parser.add_argument(
         '--work-dir',
         default='./work-dir',
@@ -42,7 +43,10 @@ def main():
     os.makedirs(args.work_dir, exist_ok=True)
     # load deploy_cfg
     deploy_cfg = load_config(args.deploy_cfg)[0]
-    save_file = get_ir_config(deploy_cfg)['save_file']
+    if args.file_name:
+        save_file = args.file_name
+    else:
+        save_file = get_ir_config(deploy_cfg)['save_file']
 
     torch2onnx(
         args.img,

@@ -1,5 +1,4 @@
 FROM openmmlab/mmdeploy:ubuntu20.04-cuda11.8-mmdeploy1.3.1
-
 #MMSegmentation
 #COPY ./ /root/workspace/mmsegmentation/
 #ENV FORCE_CUDA="1"
@@ -25,4 +24,3 @@ WORKDIR /mmpose
 RUN git checkout v1.3.2-branch_v2
 
 WORKDIR /root/workspace/mmdeploy
-
