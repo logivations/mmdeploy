@@ -18,8 +18,7 @@ RUN git clone https://github.com/logivations/mmsegmentation.git /mmsegmentation
 RUN mim install git+https://github.com/logivations/mmpretrain.git
 RUN git clone https://github.com/logivations/mmpretrain.git /mmpretrain
 
-
-RUN mim install git+https://github.com/logivations/mmpose.git
+RUN mim install mmpose
 RUN git clone https://github.com/logivations/mmpose.git /mmpose
 
 WORKDIR /mmpose
