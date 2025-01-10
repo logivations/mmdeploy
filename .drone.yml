@@ -2,7 +2,7 @@ kind: pipeline
 type: docker
 name: Label Studio main Build
 
-platform: 
+platform:
   arch: amd64
   os: linux
 
@@ -26,7 +26,7 @@ steps:
       registry: quay.io
       repo: quay.io/logivations/ml_all
       privileged: true
-      build_args: 
+      build_args:
         - BUILDKIT_INLINE_CACHE=1
       no_cache: true
       tags:
@@ -43,7 +43,7 @@ kind: pipeline
 type: docker
 name: PR Pre-commit check
 
-platform: 
+platform:
   arch: amd64
   os: linux
 
@@ -67,7 +67,7 @@ steps:
       registry: quay.io
       repo: quay.io/logivations/ml_all
       privileged: true
-      build_args: 
+      build_args:
         - BUILDKIT_INLINE_CACHE=1
       cache_from:
         - quay.io/logivations/ml_all:LS_mmdeploy_pr${DRONE_PULL_REQUEST}

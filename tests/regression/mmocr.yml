@@ -43,6 +43,10 @@ onnxruntime:
     convert_image: *convert_image_det
     deploy_config: configs/mmocr/text-detection/text-detection_onnxruntime_dynamic.py
 
+  pipeline_ort_detection_dynamic_fp16: &pipeline_ort_detection_dynamic_fp16
+    convert_image: *convert_image_det
+    deploy_config: configs/mmocr/text-detection/text-detection_onnxruntime-fp16_dynamic.py
+
   pipeline_ort_detection_mrcnn_dynamic_fp32: &pipeline_ort_detection_mrcnn_dynamic_fp32
     convert_image: *convert_image_det
     deploy_config: configs/mmocr/text-detection/text-detection_mrcnn_onnxruntime_dynamic.py
@@ -55,6 +59,11 @@ onnxruntime:
   pipeline_ort_recognition_dynamic_fp32: &pipeline_ort_recognition_dynamic_fp32
     convert_image: *convert_image_rec
     deploy_config: configs/mmocr/text-recognition/text-recognition_onnxruntime_dynamic.py
+
+  pipeline_ort_recognition_dynamic_fp16: &pipeline_ort_recognition_dynamic_fp16
+    convert_image: *convert_image_rec
+    deploy_config: configs/mmocr/text-recognition/text-recognition_onnxruntime-fp16_dynamic.py
+
 
 tensorrt:
   # ======= detection =======

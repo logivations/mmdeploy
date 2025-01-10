@@ -1,14 +1,16 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import ctypes
 import os.path as osp
 from typing import Dict, Optional, Sequence
 
+import numpy as np
 import onnxruntime as ort
 import torch
 
 from mmdeploy.utils import Backend, get_root_logger, parse_device_id
 from mmdeploy.utils.timer import TimeCounter
 from ..base import BACKEND_WRAPPER, BaseWrapper
-from .init_plugins import get_ops_path
+from .init_plugins import get_lib_path, get_ops_path
 
 
 @BACKEND_WRAPPER.register_module(Backend.ONNXRUNTIME.value)
@@ -43,6 +45,11 @@ class ORTWrapper(BaseWrapper):
         # register custom op for onnxruntime
         logger = get_root_logger()
         if osp.exists(ort_custom_op_path):
+            # load ort lib before custom ops lib
+            lib_path = get_lib_path()
+            if osp.exists(lib_path):
+                ctypes.CDLL(lib_path)
+
             session_options.register_custom_ops_library(ort_custom_op_path)
             logger.info('Successfully loaded onnxruntime custom ops from '
                         f'{ort_custom_op_path}')
@@ -58,6 +65,7 @@ class ORTWrapper(BaseWrapper):
         if output_names is None:
             output_names = [_.name for _ in sess.get_outputs()]
         self.sess = sess
+        self._input_metas = {_.name: _ for _ in sess.get_inputs()}
         self.io_binding = sess.io_binding()
         self.device_id = device_id
         self.device_type = 'cpu' if device == 'cpu' else 'cuda'
@@ -75,6 +83,9 @@ class ORTWrapper(BaseWrapper):
         """
         for name, input_tensor in inputs.items():
             # set io binding for inputs/outputs
+            input_type = self._input_metas[name].type
+            if 'float16' in input_type:
+                input_tensor = input_tensor.to(torch.float16)
             input_tensor = input_tensor.contiguous()
             if self.device_type == 'cpu':
                 input_tensor = input_tensor.cpu()
@@ -98,6 +109,8 @@ class ORTWrapper(BaseWrapper):
         output_list = self.io_binding.copy_outputs_to_cpu()
         outputs = {}
         for output_name, numpy_tensor in zip(self._output_names, output_list):
+            if numpy_tensor.dtype == np.float16:
+                numpy_tensor = numpy_tensor.astype(np.float32)
             outputs[output_name] = torch.from_numpy(numpy_tensor)
 
         return outputs

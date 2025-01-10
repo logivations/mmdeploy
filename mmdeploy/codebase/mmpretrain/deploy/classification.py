@@ -332,6 +332,10 @@ class Classification(BaseTask):
             dict: Composed of the postprocess information.
         """
         postprocess = self.model_cfg.model.head
+        if postprocess['type'] in ('EfficientFormerClsHead',
+                                   'StackedLinearClsHead'):
+            postprocess['type'] = 'LinearClsHead'
+
         if 'topk' not in postprocess:
             topk = (1, )
             logger = get_root_logger()
